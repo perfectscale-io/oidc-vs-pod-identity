@@ -1,0 +1,50 @@
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: Role
+metadata:
+  name: my-role
+spec:
+  assumeRolePolicyDocument: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Federated": "arn:aws:iam::00000000000:oidc-provider/my-oidc-url"
+          },
+          "Action": "sts:AssumeRoleWithWebIdentity",
+          "Condition": {
+            "StringLike": {
+              "my-oidc-url:aud": "sts.amazonaws.com",
+              "my-oidc-url:sub": "system:serviceaccount:my-namespace:service-account-name"
+            }
+          }
+        }
+      ]
+    }
+  name: my-role
+  description: "Temporary K8s IAM Role"
+  inlinePolicies: 
+    # There is a nice trick here, where we can use one role for multiple service accounts
+    # by using the aws:userid condition in the policy.
+    my-inline-policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Action": [
+              "ssm:GetParameterHistory",
+              "ssm:GetParametersByPath",
+              "ssm:GetParameters",
+              "ssm:GetParameter",
+              "s3:*"
+            ],
+            "Condition": {
+              "StringLike": {
+                "aws:userid":"*service-account-name*"
+              }
+            },
+            "Effect":"Allow","Resource":["*"]
+          }
+        ]
+      }

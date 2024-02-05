@@ -1,0 +1,14 @@
+# This resource exists in case the IAM role is created outside of the cluster and we want to adopt it into the cluster.
+# It provides a way for falling back on error.
+apiVersion: services.k8s.aws/v1alpha1
+kind: AdoptedResource
+metadata:
+  name: my-role
+spec:  
+  aws:
+    nameOrID: my-role
+  kubernetes:
+    group: iam.services.k8s.aws
+    kind: Role
+    metadata:
+      name: my-role
