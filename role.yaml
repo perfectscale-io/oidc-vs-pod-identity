@@ -16,7 +16,7 @@ spec:
           "Condition": {
             "StringLike": {
               "my-oidc-url:aud": "sts.amazonaws.com",
-              "my-oidc-url:sub": "system:serviceaccount:my-namespace:service-account-name"
+              "my-oidc-url:sub": "system:serviceaccount:my-namespace:my-service-account"
             }
           }
         }
@@ -41,7 +41,7 @@ spec:
             ],
             "Condition": {
               "StringLike": {
-                "aws:userid":"*service-account-name*"
+                "aws:userid":"*my-service-account*"
               }
             },
             "Effect":"Allow","Resource":["*"]
